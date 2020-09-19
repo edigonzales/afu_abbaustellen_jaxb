@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -20,6 +22,7 @@ import ch.interlis.interlis2.TRANSFER;
 
 public class XtfWriter {
     private Marshaller marshaller;
+    List<Abbaustelle> abbaustellenList;
     
     public XtfWriter() throws JAXBException {
         System.out.println("XtfWriter");
@@ -27,6 +30,10 @@ public class XtfWriter {
         JAXBContext context = JAXBContext.newInstance("ch.interlis.interlis2");
         marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        
+        abbaustellenList = new ArrayList<Abbaustelle>();
+        Abbaustelle abbaustelle = new Abbaustelle("5c6be6dd-7111-42fd-9eae-bd46fefa3c93", "5432", "Hellstätt", "Fubar", "5e5bb99e-2f68-499e-aebe-d01f05b9ea88");
+        abbaustellenList.add(abbaustelle);        
     }
     
     public void write() throws JAXBException, FileNotFoundException {
@@ -69,18 +76,20 @@ public class XtfWriter {
         SOAFUAbbaustellen20200918Abbaustellen abbaustellen = new SOAFUAbbaustellen20200918Abbaustellen();
         abbaustellen.setBID("bX");
         
-        SOAFUAbbaustellen20200918AbbaustellenAbbaustelle abbaustelle = new SOAFUAbbaustellen20200918AbbaustellenAbbaustelle();
-        abbaustelle.setTID("5c6be6dd-7111-42fd-9eae-bd46fefa3c93");
-        abbaustelle.setNummer("5432");
-        abbaustelle.setName("Hellstätt");
-        abbaustelle.setBemerkungen("Fubar");
-        
-        ObjectFactory factory = new ObjectFactory();
-        ch.interlis.interlis2.SOAFUAbbaustellen20200918AbbaustellenAbbaustelle.Geometrie geometrie = factory.createSOAFUAbbaustellen20200918AbbaustellenAbbaustelleGeometrie();
-        geometrie.setREF("5e5bb99e-2f68-499e-aebe-d01f05b9ea88");
-        abbaustelle.setGeometrie(geometrie);
-        
-        abbaustellen.getSOAFUAbbaustellen20200918AbbaustellenAbbaustellesAndSOAFUAbbaustellen20200918AbbaustellenGeometries().add(abbaustelle);
+        for (Abbaustelle abbauObj : abbaustellenList) {
+            SOAFUAbbaustellen20200918AbbaustellenAbbaustelle abbaustelle = new SOAFUAbbaustellen20200918AbbaustellenAbbaustelle();
+            abbaustelle.setTID(abbauObj.getTid());
+            abbaustelle.setNummer(abbauObj.getNummer());
+            abbaustelle.setName(abbauObj.getName());
+            abbaustelle.setBemerkungen(abbauObj.getBemerkungen());
+            
+            ObjectFactory factory = new ObjectFactory();
+            ch.interlis.interlis2.SOAFUAbbaustellen20200918AbbaustellenAbbaustelle.Geometrie geometrie = factory.createSOAFUAbbaustellen20200918AbbaustellenAbbaustelleGeometrie();
+            geometrie.setREF(abbauObj.getGeomRef());
+            abbaustelle.setGeometrie(geometrie);
+            
+            abbaustellen.getSOAFUAbbaustellen20200918AbbaustellenAbbaustellesAndSOAFUAbbaustellen20200918AbbaustellenGeometries().add(abbaustelle);
+        } 
         dataSection.getCoordSysCoordsysTopicsAndSOAFUAbbaustellen20200918Abbaustellens().add(abbaustellen);
         
         TRANSFER transfer = new TRANSFER();
