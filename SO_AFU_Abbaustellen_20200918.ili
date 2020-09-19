@@ -1,0 +1,53 @@
+INTERLIS 2.3;
+
+/** !!------------------------------------------------------------------------------
+ *  !! Version    | wer | Änderung
+ *  !!------------------------------------------------------------------------------
+ *  !! 2020-09-18 | sz  | Ersterfassung
+ *  !!==============================================================================
+ */
+!!@ technicalContact="mailto:agi@bd.so.ch"
+MODEL SO_AFU_Abbaustellen_20200918 (de)
+AT "http://afu.so.ch"
+VERSION "2020-09-18"  =
+  IMPORTS GeometryCHLV95_V1;
+
+  TOPIC Abbaustellen =
+    OID AS INTERLIS.UUIDOID;
+
+    /** Abbaustelle (aus Fachanwendung ohne Geometrie)
+     */
+    CLASS Abbaustelle =
+      /** Nummer / Identifikator
+       */
+      Nummer : MANDATORY TEXT*1024;
+      /** Name
+       */
+      Name : MANDATORY TEXT*1024;
+      /** Bemerkungen und Hinweise
+       */
+      Bemerkungen : MTEXT*1024;
+    END Abbaustelle;
+
+    /** Geometrie zu einer Abbaustelle. Getrennte Erfassung (Fachanwendung - Desktop-GIS)
+     */
+    CLASS Geometrie =
+      /** Räumliche Ausdehnung einer Abbaustelle
+       */
+      Geometrie : MANDATORY GeometryCHLV95_V1.SurfaceWithOverlaps2mm;
+    END Geometrie;
+
+    /** Verknüpfung zwischen genau einer Abbaustelle und einer Geometrie. 
+     * 
+     * In welcher Tabellen wird der Fremdschlüssel in der Datenbank angelegt? In welcher Klasse wird die Beziehung im XTF eingebettet?
+     * 
+     * Falls bei beiden (Basis-)Rollen die maximale Kardinalität kleiner gleich 1 ist, wird bei der Ziel-Klasse der zweiten  Rolle eingebettet. (Kap. 3.3.9 (und 3.3.7)).
+     */
+    ASSOCIATION Abbaustelle_Geometrie =
+      Geometrie (EXTERNAL) -- {1} Geometrie;
+      Abbaustelle -- {1} Abbaustelle;
+    END Abbaustelle_Geometrie;
+
+  END Abbaustellen;
+
+END SO_AFU_Abbaustellen_20200918.

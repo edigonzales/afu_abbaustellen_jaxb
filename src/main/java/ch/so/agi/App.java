@@ -9,8 +9,6 @@ public class App {
     public static void main(String[] args) throws JAXBException, FileNotFoundException {
         XtfWriter writer = new XtfWriter();
         writer.write();
-        
-        
-        System.out.println("Hallo Welt.");
+        System.out.println("Done.");
     }
 }
